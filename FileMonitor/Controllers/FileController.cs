@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
-using System.Globalization;
-using System.Net;
 
 namespace FileMonitor.Controllers
 {
@@ -11,8 +8,6 @@ namespace FileMonitor.Controllers
     [Route("[controller]")]
     public class FileController : Controller
     {
-        private const long MaxFileSize = 10L * 1024L * 1024L * 1024L; // 10GB
-
         private readonly ILogger<FileController> _logger;
 
         public FileController(ILogger<FileController> logger)
@@ -49,14 +44,8 @@ namespace FileMonitor.Controllers
                 if (hasContentDispositionHeader && contentDisposition.DispositionType.Equals("form-data") &&
                     !string.IsNullOrEmpty(contentDisposition.FileName.Value))
                 {
-                    // Don't trust any file name, file extension, and file data from the request unless you trust them completely
-                    // Otherwise, it is very likely to cause problems such as virus uploading, disk filling, etc
-                    // In short, it is necessary to restrict and verify the upload
-                    // Here, we just use the temporary folder and a random file name
-
                     // Get the temporary folder, and combine a random file name with it
-                    var fileName = Path.GetRandomFileName();
-                    var saveToPath = Path.Combine(Path.GetTempPath(), fileName);
+                    var saveToPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), contentDisposition.FileName.Value);
 
                     using (var targetStream = System.IO.File.Create(saveToPath))
                     {

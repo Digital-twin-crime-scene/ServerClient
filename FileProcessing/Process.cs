@@ -38,7 +38,9 @@ public static class FileProcess
 
     private static void ProcessFile(string file)
     {
-        var psi = new ProcessStartInfo("process.bash", file);
+        var psi = new ProcessStartInfo();
+        psi.FileName = "bin/process.sh";
+        psi.Arguments = file;
         psi.UseShellExecute = false;
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;

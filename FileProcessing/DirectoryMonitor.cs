@@ -2,17 +2,26 @@
 {
     public class DirectoryMonitor
     {
-        private readonly string _directory;
-        private readonly string _filter;
-        private readonly FileSystemWatcher _watcher;
+        private static DirectoryMonitor _instance;
+        
+        private readonly string _filter = "*.zip";
+        
+        private string _directory;
+        private FileSystemWatcher _watcher;
 
-        public DirectoryMonitor(string directory, string filter)
+        static DirectoryMonitor()
+        {
+            
+        }
+
+        public static DirectoryMonitor GetInstance()
+        {
+            return _instance ?? (_instance = new DirectoryMonitor());
+        }
+
+        public void StartMonitor(string directory)
         {
             _directory = directory;
-            _filter = filter;
-
-            if (!Directory.Exists(_directory))
-                Directory.CreateDirectory(_directory);
 
             _watcher = new FileSystemWatcher(_directory, _filter);
             _watcher.Changed += WatcherOnChanged;

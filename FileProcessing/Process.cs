@@ -39,7 +39,7 @@ public static class FileProcess
     private static void ProcessFile(string file)
     {
         var psi = new ProcessStartInfo();
-        psi.FileName = "bin/process.sh";
+        psi.FileName = "resources/process.sh";
         psi.Arguments = file;
         psi.UseShellExecute = false;
         psi.RedirectStandardOutput = true;
@@ -60,6 +60,6 @@ public static class FileProcess
 
         process.WaitForExit();
         Log.Information("File {file} processed", file);
-        Log.Information("Processing end time {time}", DateTime.Now);
+        Log.Information("Processing end time: {time}", DateTime.Now);
     }
 }

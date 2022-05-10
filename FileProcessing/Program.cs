@@ -2,8 +2,13 @@
 using Serilog;
 
 string homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
 string filesFolderPath = Path.Combine(homeDirectory, "files");
 string logsFolderPath = Path.Combine(homeDirectory, "logs");
+string inputFolderPath = Path.Combine(filesFolderPath, "input");
+string outputFolderPath = Path.Combine(filesFolderPath, "output");
+string recievedFolderPath = Path.Combine(filesFolderPath, "recieved");
+string archivedFilesFolderPath = Path.Combine(homeDirectory, "archived");
 
 var currentLogDate = DateTime.Now.Date.ToString("yyyyMMdd");
 
@@ -15,19 +20,21 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File($"{logsFolderPath}/{currentLogDate}/log-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
-DirectoryMonitor.GetInstance().StartMonitor(Path.Combine(filesFolderPath, "input"));
-
 Log.Information("Starting up");
 
-FileProcess.Start();
+DirectoryMonitor.GetInstance().StartMonitor(recievedFolderPath);
+
+FileProcess.Start(archivedFilesFolderPath);
 
 void CreateRequiredDirectories()
 {
     if (!Directory.Exists(filesFolderPath))
     {
         Directory.CreateDirectory(filesFolderPath);
-        Directory.CreateDirectory(Path.Combine(filesFolderPath, "input"));
-        Directory.CreateDirectory(Path.Combine(filesFolderPath, "output"));
+        Directory.CreateDirectory(inputFolderPath);
+        Directory.CreateDirectory(outputFolderPath);
+        Directory.CreateDirectory(recievedFolderPath);
+        Directory.CreateDirectory(archivedFilesFolderPath);
     }
 
     if (!Directory.Exists(logsFolderPath))

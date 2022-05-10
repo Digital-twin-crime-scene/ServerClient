@@ -1,4 +1,6 @@
-﻿namespace FileProcessing
+﻿using Serilog;
+
+namespace FileProcessing
 {
     public class DirectoryMonitor
     {
@@ -24,11 +26,12 @@
             _directory = directory;
 
             _watcher = new FileSystemWatcher(_directory, _filter);
-            _watcher.Changed += WatcherOnChanged;
+            _watcher.Created += WatcherOnCreated;
             _watcher.EnableRaisingEvents = true;
+            Log.Information("Monitoring directory {directory}", _directory);
         }
 
-        private void WatcherOnChanged(object sender, FileSystemEventArgs e)
+        private void WatcherOnCreated(object sender, FileSystemEventArgs e)
         {
             FileProcess.FilesToProcess.Enqueue(e.FullPath);
         }

@@ -10,7 +10,7 @@ public static class FileProcess
     public static Queue<string> FilesToProcess = new Queue<string>();
     public static bool Terminate = false;
 
-    public static void Start()
+    public static void Start(string archivedFilesFolderPath)
     {
         while (!Terminate || FilesToProcess.Count > 0)
         {
@@ -22,11 +22,16 @@ public static class FileProcess
                     Log.Information("Processing file {file}", file);
                     Log.Information("Processing start time {time}", DateTime.Now);
                     ProcessFile(file);
+
+                    File.Move(file, archivedFilesFolderPath);
+                    File.Delete(file);
                 }
                 catch (Exception e)
                 {   
                     Log.Error(e, "Error processing file");
                     Log.Debug("Stack trace {stackTrace}", e.StackTrace);
+                    Log.Information("Another try in 5 seconds");
+                    Thread.Sleep(_updateInteval);
                 }
             }
             else
@@ -39,8 +44,8 @@ public static class FileProcess
     private static void ProcessFile(string file)
     {
         var psi = new ProcessStartInfo();
-        psi.FileName = "resources/process.sh";
-        psi.Arguments = file;
+        psi.FileName = "Resources/proc.sh";
+        psi.Arguments = file.Split('/').Last();
         psi.UseShellExecute = false;
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;

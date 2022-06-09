@@ -21,9 +21,10 @@ public static class FileProcess
                     var file = FilesToProcess.Dequeue();
                     Log.Information("Processing file {file}", file);
                     Log.Information("Processing start time {time}", DateTime.Now);
+                    var filename = file.Split('/').Last();
                     ProcessFile(file);
-
-                    File.Move(file, archivedFilesFolderPath);
+                    
+                    File.Move(file, $"{archivedFilesFolderPath}/{filename}");
                     File.Delete(file);
                 }
                 catch (Exception e)
